@@ -1,0 +1,35 @@
+name: Ensure CNAME per branch
+
+on:
+  push:
+    branches:
+      - develop
+      - stage
+      - production
+
+jobs:
+  set-cname:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set CNAME for dev branch
+        if: github.ref == 'refs/heads/dev'
+        run: echo "dev.kylecroxall.com" > CNAME
+
+      - name: Set CNAME for stage branch
+        if: github.ref == 'refs/heads/stage'
+        run: echo "stage.kylecroxall.com" > CNAME
+
+      - name: Set CNAME for prod branch
+        if: github.ref == 'refs/heads/prod'
+        run: echo "kylecroxall.com" > CNAME
+
+      - name: Commit and push if CNAME changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add CNAME
+          git diff --quiet && git diff --staged --quiet || git commit -m "Ensure correct CNAME for $GITHUB_REF_NAME"
+          git push
