@@ -1,0 +1,27 @@
+name: Deploy to Production
+
+on: 
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Push production to production
+        run: |
+          git config --global user.email "kylecroxall@gmail.com"
+          git config --global user.name "GitHub Actions"
+          git fetch origin
+          git checkout production
+          git merge origin/main --no-edit
+          git push origin production
+      
+
+
+    
